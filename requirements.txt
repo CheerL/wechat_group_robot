@@ -1,0 +1,6 @@
+flask
+threadpool
+itchat
+wxpy
+flask_socketio
+pyinstaller

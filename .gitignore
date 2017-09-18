@@ -1,0 +1,8 @@
+test*
+build/*
+dist/*
+log/*
+src/*
+!src/pic/begin.png
+__pycache__/*
+*/.vscode/*
