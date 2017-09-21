@@ -53,8 +53,6 @@ export default {
       that.new_socket()
       that.socket.emit('logout')
     },
-    cancel_func: () => {
-    },
     new_socket: () => {
       if (!that.socket) {
         that.socket = io.connect(that.host)
@@ -64,6 +62,9 @@ export default {
         that.socket.on('server-send', msg => {
           if (msg.style === 'login') {
             that.change_login(msg)
+            if (msg.status == 2){
+              that.close_socket()
+            }
           } else if (msg.style === 'error') {
             that.tip = true
           }
@@ -83,13 +84,6 @@ export default {
   },
   beforeDestroy () {
     this.close_socket()
-  },
-  watch: {
-    status: val => {
-      if (val === 2) {
-        that.close_socket()
-      }
-    }
   }
 }
 </script>

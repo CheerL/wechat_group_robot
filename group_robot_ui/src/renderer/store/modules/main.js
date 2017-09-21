@@ -136,7 +136,7 @@ const actions = {
         let force = playload.force
         let now = new Date().getTime()
         if (force || !state.update_time[puid] || now - state.update_time[puid] > 60000) {
-            commit('change_loading', true)
+            commit('change_loading', 1)
             commit('change_group_puid', null)
             axios.post(
                     `${state.host}/api/group/`,
@@ -144,19 +144,23 @@ const actions = {
                 )
                 .then(msg => {
                     let data = msg.data
-                    let group_detail = {}
-                    group_detail.group_member_list = data.member
-                    group_detail.pic_src = data.avatar
-                    group_detail.group_name = data.name
-                    group_detail.people_num = data.people_num
-                    group_detail.is_owner = data.is_owner
-                    group_detail.is_trans = data.is_trans
-                    commit('change_groups_detail', { puid: puid, val: group_detail })
-                    commit('change_group_puid', puid)
-                    commit('change_rule', data.rule)
-                    commit('change_group_target', data.target_group)
-                    commit('change_loading', false)
-                    commit('change_group_white', data.white)
+                    if (data.res) {
+                        let group_detail = {}
+                        group_detail.group_member_list = data.member
+                        group_detail.pic_src = data.avatar
+                        group_detail.group_name = data.name
+                        group_detail.people_num = data.people_num
+                        group_detail.is_owner = data.is_owner
+                        group_detail.is_trans = data.is_trans
+                        commit('change_groups_detail', { puid: puid, val: group_detail })
+                        commit('change_group_puid', puid)
+                        commit('change_rule', data.rule)
+                        commit('change_group_target', data.target_group)
+                        commit('change_loading', 0)
+                        commit('change_group_white', data.white)
+                    } else {
+                        commit('change_loading', 2)
+                    }
                 })
             commit('change_update_time', { key: puid, val: now })
         } else {
@@ -175,7 +179,7 @@ const actions = {
     },
     set_target_group: ({ state, commit, dispatch }, target) => {
         target = JSON.stringify(target)
-        commit('change_loading', true)
+        commit('change_loading', 1)
         axios.post(`${state.host}/api/group/target/`, qs.stringify({ puid: state.group_puid, target: target }))
             .then(msg => {
                 setTimeout(() => {
@@ -185,7 +189,7 @@ const actions = {
     },
     set_white: ({ state, commit, dispatch }, white) => {
         white = JSON.stringify(white)
-        commit('change_loading', true)
+        commit('change_loading', 1)
         axios.post(`${state.host}/api/group/white/`, qs.stringify({ puid: state.group_puid, white: white }))
             .then(msg => {
                 setTimeout(() => {
@@ -195,7 +199,7 @@ const actions = {
     },
     set_rule: ({ state, commit, dispatch }, rules) => {
         rules = JSON.stringify(rules)
-        commit('change_loading', true)
+        commit('change_loading', 1)
         axios.post(`${state.host}/api/group/rule/`, qs.stringify({ puid: state.group_puid, rules: rules }))
             .then(msg => {
                 setTimeout(() => {
@@ -205,7 +209,7 @@ const actions = {
     },
     del_member: ({ state, commit, dispatch }, members) => {
         members = JSON.stringify(members)
-        commit('change_loading', true)
+        commit('change_loading', 1)
         axios.post(`${state.host}/api/group/remove/`, qs.stringify({ puid: state.group_puid, members: members }))
             .then(msg => {
                 setTimeout(() => {

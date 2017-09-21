@@ -17,14 +17,11 @@
         'get_robot_info',
         'get_group_list'
       ]),
-      auto_update() {
-        this.get_login_status()
-      }
     },
     mounted() {
-      this.auto_update()
+      this.get_login_status()
       this.timer = setInterval(
-        this.auto_update,
+        this.get_login_status,
         30000
       )
     },

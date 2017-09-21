@@ -136,6 +136,7 @@ class Group_robot(object):
                 self.update_groups()
                 self.bot.enable_puid(path=PUID_PATH)
             except:
+                self.loginning = False
                 server_send({
                     'style': 'error'
                 })
@@ -259,7 +260,7 @@ class Group_robot(object):
         self.update_groups()
         group = wxpy.ensure_one(self.bot.search(puid=puid))
         if group:
-            pl.run_thread_pool([(self.get_avatar, (member,)) for member in group.members], False)
+            # pl.run_thread_pool([(self.get_avatar, (member,)) for member in group.members], False)
             avater_path = os.path.join(AVA_PATH, '{}.png'.format(group.puid))
             group.get_avatar(avater_path)
 
@@ -427,7 +428,8 @@ class Group_robot(object):
         self.work = False
         for group in self.trans_groups:
             group.stop()
-        pl.kill_thread(name='trans_work')
+        if pl.search_thread(name='trans_work'):
+            pl.kill_thread(name='trans_work')
         log.info('结束转发')
 
 class Group(object):

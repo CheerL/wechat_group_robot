@@ -8,7 +8,7 @@ import json
 from flask import send_file, jsonify, request
 from __init__ import CONF_PATH, app, api, socket, server_send, server_backgroud
 
-from robot_api import Group_robot, Group, Rule
+from robot_api import Group_robot, Group, Rule, log
 
 def SUCCESS():
     return jsonify({'res': True})
@@ -69,16 +69,22 @@ def get_groups():
 
 @api.route('/group/', methods=['POST'])
 def get_group():
-    if request.method == 'POST':
-        if not robot.loginned:
-            return ERROR() 
-        puid = get_para(request, 'puid')
-        info = robot.get_group_info(puid)
-        if info:
-            return jsonify(info)
+    try:
+        if request.method == 'POST':
+            if not robot.loginned:
+                return ERROR() 
+            puid = get_para(request, 'puid')
+            info = robot.get_group_info(puid)
+            if info:
+                info['res'] = True
+                print(info)
+                return jsonify(info)
+            else:
+                return ERROR()
         else:
             return ERROR()
-    else:
+    except Exception as e:
+        log.error(e)
         return ERROR()
 
 @api.route('/group/trans/', methods=['POST'])

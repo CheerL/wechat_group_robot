@@ -20,12 +20,17 @@
       </MenuGroup>
       </Menu>
     </Col>
-    <Col span='18' v-if='loading' class="group-main">
+    <Col span='18' v-if='loading == 1' class="group-main">
         <Spin fix>
           <div>加载中...</div>
         </Spin>
     </Col>
-    <Col span='18' v-else-if='!loading && group_detail' class="group-main">
+    <Col span='18' v-else-if='loading == 2' class="group-main main">
+        <h1 class='group-tip' @click='get_group({puid: menu_active, force: true})'>
+          加载失败, 请点<b>此处</b>重试
+        </h1>
+    </Col>
+    <Col span='18' v-else-if='loading == 0 && group_detail' class="group-main">
       <Row>
         <Col span='8'>
         <img class='group_img' :src="pic_src">
@@ -63,7 +68,7 @@
       </Row>
       <Row>
         <Collapse v-model="active">
-          <Panel name='1'>
+          <!-- <Panel name='1'>
             <div class='pannel-head'>
             群成员管理
             </div>
@@ -76,12 +81,12 @@
                 @click='member_ctrl(member)'
               >
               </Member>
-              <!-- <Member
+              <Member
                 :member="{name:'添加成员'}"
                 :icon='"plus-round"'
                 @click='member_add'
               >
-              </Member> -->
+              </Member>
               <Member
                 v-if="is_owner"
                 :member="{name:'删除成员'}"
@@ -97,7 +102,7 @@
               >
               </Member>
             </div>
-          </Panel>
+          </Panel> -->
           <Panel name='2'>
             <div class='pannel-head'>
               转发目标管理
@@ -227,7 +232,7 @@ import Rule from '@/components/Group/Rule'
 import Member from '@/components/Group/Member'
 import Target from '@/components/Group/Target'
 import White from '@/components/Group/White'
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import fs from 'fs'
 const {dialog} = require('electron').remote
 
@@ -246,7 +251,7 @@ export default {
     window.that = this
     return {
       state: that.$store.state.main,
-      active: ['1', '2', '3', '4'],
+      active: ['2', '3', '4'],
       out_rule: [],
       menu_active: null,
       member_ctrl_status: 0,
@@ -264,7 +269,9 @@ export default {
       return that.state.trans_status
     },
     group_puid: () => {
-      return that.state.group_puid
+      let puid = that.state.group_puid
+      that.menu_active = puid
+      return puid
     },
     group_list: () => {
       return that.state.group_list
@@ -306,12 +313,16 @@ export default {
   methods: {
     ...mapActions([
       'get_group_list',
+      'get_robot_info',
       'get_group',
       'switch_group_trans',
       'set_target_group',
       'set_rule',
       'set_white',
       'del_member'
+    ]),
+    ...mapMutations([
+      'change_loading'
     ]),
     leave: index => {
       that.rule_edit = false
@@ -483,7 +494,7 @@ export default {
         `${__dirname}\\..\\..\\..\\api\\src`
       dialog.showOpenDialog(
         {
-          title: '规则导出',
+          title: '规则导入',
           defaultPath: path,
           filters: [{name:'*', extensions: ['json']}]
         }, 
@@ -515,14 +526,9 @@ export default {
   },
   mounted () {
     that.get_group_list()
-    that.$nextTick(function() {
-        that.$refs.menu.updateActiveName();
-    })
     that.menu_active = that.group_puid
-  },
-  watch: {
-    group_puid: () => {
-    }
+    that.$refs.menu.currentActiveName = that.menu_active
+    that.get_robot_info()
   }
 }
 </script>
