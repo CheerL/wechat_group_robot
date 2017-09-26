@@ -31,7 +31,6 @@ class Group_robot(object):
         self.avatar_path = None
         self.trans_groups = list()
         self.send_list = list()
-        self.job_list = list()
         self.trans_count = 0
         self.trans_text_count = 0
         self.trans_pic_count = 0
@@ -360,19 +359,20 @@ class Group_robot(object):
 
             async def send_msg_to_target():
                 count = 0
+                job_list = []
                 while self.work:
                     try:
-                        if self.job_list:
+                        if job_list:
                             msg_dict, target, group, sleep_time = job_list.pop(0)
                             group.send_to_target(msg_dict['name'], msg_dict, target)
-                            if self.job_list:
+                            if job_list:
                                 log.info('休息{}秒后继续转发{}的消息'.format(str(sleep_time), msg_dict['name']))
                                 await asyncio.sleep(sleep_time)
                             else:
                                 group.result_report(msg_dict['name'], msg_dict['rule'])
                                 group.total_people_num = 0
                                 log.info('{}的消息转发完成'.format(msg_dict['name']))
-                        elif not self.job_list and self.send_list:
+                        elif not job_list and self.send_list:
                             if count is self.time['rest_msg_num']:
                                 count = 0
                                 await asyncio.sleep(self.time['rest_time'])
@@ -380,7 +380,7 @@ class Group_robot(object):
                                 count += 1
                                 msg_dict = self.send_list.pop(0)
                                 group = self.find_in_trans(msg_dict['puid'])
-                                self.job_list = [(
+                                job_list = [(
                                     msg_dict,
                                     target,
                                     group,
@@ -704,12 +704,12 @@ class Group(object):
         text = rule.fail_report.replace(
             '\\n', '\n'
         ).replace(
-            '【@被收集者】', '@{}\n'.format(name)
-        ).replace(
-            '【关键词】', rule.keyword
-        ).replace(
-            '【广告词】', ''.join(['[{}]'.format(word) for word in rule.reject_words if word])
-        )
+                '【@被收集者】', '@{}\n'.format(name)
+            ).replace(
+                '【关键词】', rule.keyword
+            ).replace(
+                '【广告词】', ''.join(['[{}]'.format(word) for word in rule.reject_words if word])
+            )
         self.robot.reject_count += 1
         log.info('{}的消息中含有广告词, 拒绝转发'.format(name))
         self.get_group(self.puid).send(text)
@@ -718,12 +718,12 @@ class Group(object):
         text = rule.success_report.replace(
             '\\n', '\n'
         ).replace(
-            '【@被收集者】', '@{}\n'.format(name)
-        ).replace(
-            '【关键词】', rule.keyword
-        ).replace(
-            '【收集的图片数量】', str(pic_count)
-        )
+                '【@被收集者】', '@{}\n'.format(name)
+            ).replace(
+                '【关键词】', rule.keyword
+            ).replace(
+                '【收集的图片数量】', str(pic_count)
+            )
         log.info('{}的消息收集完成'.format(name))
         self.get_group(self.puid).send(text)
 
@@ -731,14 +731,14 @@ class Group(object):
         text = rule.result_report.replace(
             '\\n', '\n'
         ).replace(
-            '【@被收集者】', '@{}\n'.format(name)
-        ).replace(
-            '【关键词】', rule.keyword
-        ).replace(
-            '【已发送群数量】', str(len(self.target_puids))
-        ).replace(
-            '【所有群人数】', str(self.total_people_num)
-        )
+                '【@被收集者】', '@{}\n'.format(name)
+            ).replace(
+                '【关键词】', rule.keyword
+            ).replace(
+                '【已发送群数量】', str(len(self.target_puids))
+            ).replace(
+                '【所有群人数】', str(self.total_people_num)
+            )
         self.get_group(self.puid).send(text)
     
     def end_receive_report(self, name):
