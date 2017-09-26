@@ -137,7 +137,6 @@ const actions = {
         let now = new Date().getTime()
         if (force || !state.update_time[puid] || now - state.update_time[puid] > 60000) {
             commit('change_loading', 1)
-            commit('change_group_puid', null)
             axios.post(
                     `${state.host}/api/group/`,
                     qs.stringify({ puid: puid })
@@ -184,7 +183,7 @@ const actions = {
             .then(msg => {
                 setTimeout(() => {
                     dispatch('get_group', { puid: state.group_puid, force: true })
-                }, 500)
+                }, 100)
             })
     },
     set_white: ({ state, commit, dispatch }, white) => {
@@ -194,7 +193,7 @@ const actions = {
             .then(msg => {
                 setTimeout(() => {
                     dispatch('get_group', { puid: state.group_puid, force: true })
-                }, 500)
+                }, 100)
             })
     },
     set_rule: ({ state, commit, dispatch }, rules) => {
@@ -204,7 +203,7 @@ const actions = {
             .then(msg => {
                 setTimeout(() => {
                     dispatch('get_group', { puid: state.group_puid, force: true })
-                }, 500)
+                }, 100)
             })
     },
     del_member: ({ state, commit, dispatch }, members) => {
@@ -214,7 +213,7 @@ const actions = {
             .then(msg => {
                 setTimeout(() => {
                     dispatch('get_group', { puid: state.group_puid, force: true })
-                }, 500)
+                }, 100)
             })
     }
 }

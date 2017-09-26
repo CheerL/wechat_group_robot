@@ -76,8 +76,6 @@ def get_group():
             puid = get_para(request, 'puid')
             info = robot.get_group_info(puid)
             if info:
-                info['res'] = True
-                print(info)
                 return jsonify(info)
             else:
                 return ERROR()

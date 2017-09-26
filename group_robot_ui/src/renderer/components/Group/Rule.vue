@@ -126,27 +126,27 @@
     <div class='inner_rule_item'>
         <b style='float:left'>开始返回语句：</b>
         <div v-if='!rule.edit'>{{rule.start_report}}</div>
-        <Input v-else v-model="rule.start_report" style='width: 70%' size='small'></Input>
+        <Input v-else v-model="rule.start_report" type="textarea" :autosize="{minRows: 4, maxRows: 10}" style='width: 70%' size='small'></Input>
     </div>
     <div class='inner_rule_item'>
         <b style='float:left'>成功返回语句：</b>
         <div v-if='!rule.edit'>{{rule.success_report}}</div>
-        <Input v-else v-model="rule.success_report" style='width: 70%' size='small'></Input>
+        <Input v-else v-model="rule.success_report" type="textarea" :autosize="{minRows: 4, maxRows: 10}" style='width: 70%' size='small'></Input>
     </div>
     <div class='inner_rule_item'>
         <b style='float:left'>失败返回语句：</b>
         <div v-if='!rule.edit'>{{rule.fail_report}}</div>
-        <Input v-else v-model="rule.fail_report" style='width: 70%' size='small'></Input>
+        <Input v-else v-model="rule.fail_report" type="textarea" :autosize="{minRows: 4, maxRows: 10}" style='width: 70%' size='small'></Input>
     </div>
     <div class='inner_rule_item'>
         <b style='float:left'>缺失返回语句：</b>
         <div v-if='!rule.edit'>{{rule.include_report}}</div>
-        <Input v-else v-model="rule.include_report" style='width: 70%' size='small'></Input>
+        <Input v-else v-model="rule.include_report" type="textarea" :autosize="{minRows: 4, maxRows: 10}" style='width: 70%' size='small'></Input>
     </div>
     <div class='inner_rule_item'>
         <b style='float:left'>结果返回语句：</b>
         <div v-if='!rule.edit'>{{rule.result_report}}</div>
-        <Input v-else v-model="rule.result_report" style='width: 70%' size='small'></Input>
+        <Input v-else v-model="rule.result_report" type="textarea" :autosize="{minRows: 4, maxRows: 10}" style='width: 70%' size='small'></Input>
     </div>
   </Card>
   <Modal
@@ -285,11 +285,9 @@ export default {
       this.$emit('over-edit', this.focu)
     },
     closing () {
-        console.log('close')
         for (let i in this.inner_rules) {
             let rule = this.inner_rules[i]
             if (rule.keyword.length === 0) {
-                console.log(rule)
                 this.inner_rules.splice(i, 1)
             }
         }

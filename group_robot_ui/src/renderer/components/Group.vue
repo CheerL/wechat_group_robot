@@ -324,7 +324,7 @@ export default {
     ...mapMutations([
       'change_loading'
     ]),
-    leave: index => {
+    leave: (index, force) => {
       that.rule_edit = false
       that.target_edit = false
       that.white_edit = false
@@ -343,15 +343,15 @@ export default {
           that.focus = null
         }
       }
-      that.get_group({puid: index})
+      that.get_group({ puid: index , force: force})
       that.menu_active = index
     },
     select: index => {
       if (index !== that.group_puid) {
         if (that.rule_edit || that.target_edit || that.white_edit) {
-        that.$Modal.confirm({
+          that.$Modal.confirm({
             content: '仍有修改尚未提交。是否确认离开',
-            okText: '确认离开',
+            okText: '离开',
             cancelText: '留下',
             onOk: () => {that.leave(index)},
             onCancel: () => {
@@ -363,8 +363,7 @@ export default {
           that.leave(index)
         }
       } else {
-        that.get_group({puid: index, force: true})
-        that.leave(index)
+        that.leave(index, true)
       }
     },
     member_ctrl: member => {
@@ -430,22 +429,24 @@ export default {
       return all.concat(that.out_rule)
     },
     copy_rule: index => {
-      let rule = that.all_rules()[index]
-      that.rule_list.push({
-        keyword: rule.keyword,
-        include_words: rule.include_words,
-        reject_words: rule.reject_words,
-        head: rule.head,
-        tail: rule.tail,
-        success_report: rule.success_report,
-        fail_report: rule.fail_report,
-        result_report: rule.result_report,
-        start_report: rule.start_report,
-        include_report: rule.include_report,
-        index: new Date().getTime(),
-        group: that.group_name,
-        edit: false
-      })
+      if (index != null || index != undefined) {
+        let rule = that.all_rules()[index]
+        that.rule_list.push({
+          keyword: rule.keyword,
+          include_words: rule.include_words,
+          reject_words: rule.reject_words,
+          head: rule.head,
+          tail: rule.tail,
+          success_report: rule.success_report,
+          fail_report: rule.fail_report,
+          result_report: rule.result_report,
+          start_report: rule.start_report,
+          include_report: rule.include_report,
+          index: new Date().getTime(),
+          group: that.group_name,
+          edit: false
+        })
+      }
     },
     sub_rule_on_edit: focus => {
       that.sub_rule_edit = true
@@ -464,7 +465,6 @@ export default {
         defaultPath: path,
         filters: [{name:'*', extensions: ['json']}]
       }, file => {
-        console.log(file)
         if (file === undefined){
           that.$Modal.warning({
             content: '你没有选择文件，导出取消'
@@ -500,7 +500,6 @@ export default {
         }, 
         file => {
           file = file[0]
-          console.log(file)
           if (file === undefined){
             that.$Modal.warning({
               content: '你没有选择文件，导入取消'
@@ -529,6 +528,13 @@ export default {
     that.menu_active = that.group_puid
     that.$refs.menu.currentActiveName = that.menu_active
     that.get_robot_info()
+  },
+  watch: {
+    copy_rule_index: () => {
+      setTimeout(() => {
+        that.copy_rule_index = null
+      }, 0)
+    }
   }
 }
 </script>
