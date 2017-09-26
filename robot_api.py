@@ -363,7 +363,7 @@ class Group_robot(object):
                 while self.work:
                     try:
                         if self.job_list:
-                            msg_dict, target, group, sleep_time = job_list.pop(0)
+                            msg_dict, target, group, sleep_time = self.job_list.pop(0)
                             group.send_to_target(msg_dict['name'], msg_dict, target)
                             if self.job_list:
                                 log.info('休息{}秒后继续转发{}的消息'.format(str(sleep_time), msg_dict['name']))
